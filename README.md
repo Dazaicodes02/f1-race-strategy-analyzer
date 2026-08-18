@@ -13,7 +13,10 @@ Built as part of a self-directed motorsport data analytics portfolio, combining 
 - Pulls lap, tyre compound, tyre age, and stint data for any F1 session (2018–present)
 - Cleans the data — removes in/out laps and laps run under Safety Car/VSC that would distort degradation numbers
 - Calculates a **degradation slope** (seconds lost per additional lap of tyre age) per driver, per compound, per stint
-- Plots lap time vs. tyre age to visually compare degradation across drivers and compounds
+- Produces three visualizations:
+  1. **Tyre degradation curves** — lap time vs. tyre age, compared across drivers and compounds
+  2. **Strategy timeline** — a horizontal stint chart showing which compound each driver ran and when they pitted (the classic F1-broadcast strategy chart)
+  3. **Average race pace comparison** — a simple bar chart ranking drivers by average lap time, the quickest of the three to read at a glance
 - Exports clean, structured CSVs ready to load into a SQL database or Power BI
 
 ## Sample output
@@ -67,9 +70,11 @@ DRIVERS = ["VER", "HAM", "LEC"]  # driver codes to compare
 Running the script generates race-specific output files, so re-running for a different race never overwrites a previous one:
 - `tyre_degradation_summary_<race>_<year>.csv` — degradation slope per driver/compound/stint
 - `clean_laps_export_<race>_<year>.csv` — cleaned lap-by-lap data, ready for Power BI or SQL import
-- `tyre_degradation_<race>_<year>.png` — comparison plot
+- `tyre_degradation_<race>_<year>.png` — tyre degradation comparison plot
+- `strategy_timeline_<race>_<year>.png` — pit stop / compound strategy timeline
+- `average_pace_<race>_<year>.png` — average lap time bar chart
 
-e.g. running the Singapore 2024 race produces `tyre_degradation_singapore_2024.png`.
+e.g. running the Singapore 2024 race produces `tyre_degradation_singapore_2024.png`, `strategy_timeline_singapore_2024.png`, and `average_pace_singapore_2024.png`.
 
 ## SQL layer
 
@@ -83,5 +88,5 @@ e.g. running the Singapore 2024 race produces `tyre_degradation_singapore_2024.p
 
 ## Author
 
-Thangavel K — B.Tech, Artificial Intelligence & Data Science, Saranathan College of Engineering
+Diva — B.Tech, Artificial Intelligence & Data Science, Saranathan College of Engineering
 [LinkedIn](https://www.linkedin.com/in/thangavel-kbtech) · [GitHub](https://github.com/Dazaicodes02)
