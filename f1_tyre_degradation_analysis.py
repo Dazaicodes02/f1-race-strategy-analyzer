@@ -30,8 +30,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # ── CONFIG — change these to analyze a different race ──────────────────────
-YEAR = 2024
-GRAND_PRIX = "Bahrain"     # e.g. "Monaco", "Singapore", "Silverstone"
+YEAR = 2026
+GRAND_PRIX = "Barcelona"     # e.g. "Monaco", "Singapore", "Silverstone"
 SESSION = "R"               # R = Race, Q = Qualifying, FP1/FP2/FP3 = Practice
 DRIVERS = ["VER", "HAM", "LEC"]   # driver 3-letter codes to compare, or None for all
 # ─────────────────────────────────────────────────────────────────────────
