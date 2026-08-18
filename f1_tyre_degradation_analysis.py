@@ -1,26 +1,3 @@
-"""
-F1 Race Strategy Analyzer — Tyre Degradation & Pit Stop Comparison
---------------------------------------------------------------------
-A starter portfolio project using real F1 telemetry via the FastF1 library.
-
-WHAT THIS SCRIPT DOES
-1. Pulls official lap-by-lap data for a chosen race (compound, tyre age, lap time, pit stops)
-2. Cleans it (drops in/out laps, safety car laps — these distort degradation curves)
-3. Fits a degradation trend (lap time vs tyre age) per compound per driver
-4. Plots comparative degradation curves
-5. Exports a clean table to CSV — this is what you'd load into Power BI or a SQL database
-
-HOW TO RUN
-1. pip install fastf1 pandas matplotlib
-2. Just run: python f1_tyre_degradation_analysis.py
-   (First run downloads and caches data — takes a minute or two. After that it's instant.)
-3. Edit YEAR / GP / SESSION / DRIVERS below to analyze any race you like.
-
-WHY THIS PROJECT MATTERS FOR YOUR PORTFOLIO
-This is the exact type of analysis race strategists do before and during a Grand Prix:
-"how much time do we lose per lap as this tyre ages, and does that justify pitting earlier?"
-"""
-
 import os
 import fastf1
 import pandas as pd
