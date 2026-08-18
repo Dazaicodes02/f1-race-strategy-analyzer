@@ -4,14 +4,18 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # ── CONFIG — change these to analyze a different race ──────────────────────
-YEAR = 2024
-GRAND_PRIX = "Bahrain"     # e.g. "Monaco", "Singapore", "Silverstone"
+YEAR = 2026
+GRAND_PRIX = "Barcelona"     # e.g. "Monaco", "Singapore", "Silverstone"
 SESSION = "R"               # R = Race, Q = Qualifying, FP1/FP2/FP3 = Practice
 DRIVERS = ["VER", "HAM", "LEC"]   # driver 3-letter codes to compare, or None for all
 # ─────────────────────────────────────────────────────────────────────────
 
 os.makedirs("f1_cache", exist_ok=True)  # fastf1 requires this folder to exist first
 fastf1.Cache.enable_cache("f1_cache")  # local folder, avoids re-downloading every run
+
+# Used to build unique output filenames per race, e.g. "singapore_2024"
+# so re-running for a new race doesn't overwrite a previous race's results.
+RACE_TAG = f"{GRAND_PRIX.lower().replace(' ', '_')}_{YEAR}"
 
 
 def load_race_data():
@@ -54,7 +58,9 @@ def build_degradation_table(clean_laps: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values(["Driver", "Stint"])
 
 
-def plot_degradation(clean_laps: pd.DataFrame, save_path="tyre_degradation.png"):
+def plot_degradation(clean_laps: pd.DataFrame, save_path=None):
+    if save_path is None:
+        save_path = f"tyre_degradation_{RACE_TAG}.png"
     fig, ax = plt.subplots(figsize=(10, 6))
     for (driver, compound), grp in clean_laps.groupby(["Driver", "Compound"]):
         ax.plot(grp["TyreLife"], grp["LapTimeSeconds"], marker="o", markersize=3,
@@ -79,11 +85,13 @@ def main():
     print(deg_table.to_string(index=False))
 
     # Export — this CSV is what you'd load into Power BI or import into a SQL table
-    deg_table.to_csv("tyre_degradation_summary.csv", index=False)
+    summary_path = f"tyre_degradation_summary_{RACE_TAG}.csv"
+    laps_path = f"clean_laps_export_{RACE_TAG}.csv"
+    deg_table.to_csv(summary_path, index=False)
     clean[["Driver", "LapNumber", "Compound", "TyreLife", "Stint", "LapTimeSeconds"]].to_csv(
-        "clean_laps_export.csv", index=False
+        laps_path, index=False
     )
-    print("\nExported: tyre_degradation_summary.csv, clean_laps_export.csv")
+    print(f"\nExported: {summary_path}, {laps_path}")
 
     plot_degradation(clean)
 

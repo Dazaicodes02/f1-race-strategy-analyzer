@@ -18,7 +18,7 @@ Built as part of a self-directed motorsport data analytics portfolio, combining 
 
 ## Sample output
 
-![Tyre degradation plot](tyre_degradation.png)
+![Tyre degradation plot](tyre_degradation_bahrain_2024.png)
 
 *Lap time vs. tyre age for selected drivers — steeper lines indicate faster tyre degradation.*
 
@@ -64,10 +64,12 @@ DRIVERS = ["VER", "HAM", "LEC"]  # driver codes to compare
 
 ## Output files
 
-Running the script generates:
-- `tyre_degradation_summary.csv` — degradation slope per driver/compound/stint
-- `clean_laps_export.csv` — cleaned lap-by-lap data, ready for Power BI or SQL import
-- `tyre_degradation.png` — comparison plot
+Running the script generates race-specific output files, so re-running for a different race never overwrites a previous one:
+- `tyre_degradation_summary_<race>_<year>.csv` — degradation slope per driver/compound/stint
+- `clean_laps_export_<race>_<year>.csv` — cleaned lap-by-lap data, ready for Power BI or SQL import
+- `tyre_degradation_<race>_<year>.png` — comparison plot
+
+e.g. running the Singapore 2024 race produces `tyre_degradation_singapore_2024.png`.
 
 ## SQL layer
 
