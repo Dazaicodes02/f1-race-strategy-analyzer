@@ -33,7 +33,7 @@ import matplotlib.pyplot as plt
 YEAR = 2026
 GRAND_PRIX = "Barcelona"     # e.g. "Monaco", "Singapore", "Silverstone"
 SESSION = "R"               # R = Race, Q = Qualifying, FP1/FP2/FP3 = Practice
-DRIVERS = ["VER", "HAM", "LEC"]   # driver 3-letter codes to compare, or None for all
+DRIVERS = ["VER", "HAM", "LEC" , "NOR" , "PIA" , "ALO" , "ANT" , "RUS"]   # driver 3-letter codes to compare, or None for all
 # ─────────────────────────────────────────────────────────────────────────
 
 os.makedirs("f1_cache", exist_ok=True)  # fastf1 requires this folder to exist first
