@@ -81,5 +81,5 @@ Running the script generates:
 
 ## Author
 
-Diva — B.Tech, Artificial Intelligence & Data Science, Saranathan College of Engineering
+Thangavel K — B.Tech, Artificial Intelligence & Data Science, Saranathan College of Engineering
 [LinkedIn](https://www.linkedin.com/in/thangavel-kbtech) · [GitHub](https://github.com/Dazaicodes02)
