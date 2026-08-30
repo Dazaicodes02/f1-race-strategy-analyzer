@@ -1,0 +1,4 @@
+__pycache__/
+tyre_degradation_summary.csv
+clean_laps_export.csv
+f1_cache/
