@@ -1,90 +1,104 @@
-# F1 Race Strategy & Tyre Degradation Analyzer
+# 🏁 F1 Race Strategy & Tyre Degradation Analyzer
 
-Analyzing real Formula 1 telemetry data to model tyre degradation and evaluate race strategy decisions — built with Python, SQL, and Power BI.
+An interactive Formula 1 strategy dashboard — pulls real F1 telemetry data, models tyre degradation per driver, and simulates alternate pit-stop strategies to evaluate whether a faster race was actually on the table. Built as a portfolio project combining a data analytics/AI background with a long-standing interest in F1 strategy.
 
-## Overview
-
-This project pulls official F1 lap-by-lap timing and tyre data (via the [FastF1](https://github.com/theOehrly/Fast-F1) library) and analyzes how tyre performance degrades over a stint. The goal: quantify how much lap time a driver loses per lap of tyre age, by compound, and use that to reason about pit stop strategy — the same core question race strategists solve on the pit wall.
-
-Built as part of a self-directed motorsport data analytics portfolio, combining a data analytics/AI background with a long-standing interest in F1 strategy.
+**🌐 Live demo:** [add your Streamlit Cloud URL here once deployed]
 
 ## What it does
 
-- Pulls lap, tyre compound, tyre age, and stint data for any F1 session (2018–present)
-- Cleans the data — removes in/out laps and laps run under Safety Car/VSC that would distort degradation numbers
-- Calculates a **degradation slope** (seconds lost per additional lap of tyre age) per driver, per compound, per stint
-- Produces three visualizations:
-  1. **Tyre degradation curves** — lap time vs. tyre age, compared across drivers and compounds
-  2. **Strategy timeline** — a horizontal stint chart showing which compound each driver ran and when they pitted (the classic F1-broadcast strategy chart)
-  3. **Average race pace comparison** — a simple bar chart ranking drivers by average lap time, the quickest of the three to read at a glance
-- Exports clean, structured CSVs ready to load into a SQL database or Power BI
+Pick any Grand Prix from 2018 onward, and the dashboard:
 
-## Sample output
+- Pulls official lap-by-lap timing, tyre compound, tyre age, and stint data via [FastF1](https://github.com/theOehrly/Fast-F1)
+- Cleans it — removes in/out laps and laps run under Safety Car/VSC that would distort degradation numbers
+- Visualizes it four ways, then goes a step further and **models what the optimal strategy would have been**
 
-![Tyre degradation plot](tyre_degradation_bahrain_2024.png)
+### Tabs
 
-*Lap time vs. tyre age for selected drivers — steeper lines indicate faster tyre degradation.*
+| Tab | What it shows |
+|---|---|
+| 📉 **Tyre Degradation** | Interactive lap-time-vs-tyre-age chart. Toggle between per-stint tyre age and full-race lap number; pit stops are marked with dashed lines and hoverable explanations. Handles 15+ drivers at once — click any driver's legend entry to isolate or hide their line. |
+| 🔧 **Strategy Timeline** | The classic broadcast-style stint chart — which compound each driver ran and when they pitted. |
+| ⏱️ **Average Pace** | Quick bar-chart ranking of average lap time per driver, colored by team. |
+| 📋 **Data Table** | Raw degradation summary (seconds lost per lap of tyre age, per driver/compound/stint), downloadable as CSV. |
+| 🏆 **Strategy Verdict** | The core analysis — see below. |
+
+### Strategy Verdict — the interesting part
+
+For each driver, the app:
+
+1. **Fits a real degradation curve** per compound (linear regression on their actual lap times vs. tyre age)
+2. **Replays their actual strategy** through that model, for a fair baseline
+3. **Brute-force searches** every realistic 1-stop, 2-stop, and 3-stop alternative — every possible pit lap and compound combination — to find what the data says would have been fastest
+4. **Refuses to recommend unrealistic strategies** — won't suggest running a compound far beyond how long it was ever actually observed lasting that session
+5. Optionally factors in **real tyre-set availability**: loads FP1, FP2, FP3, and Qualifying for that weekend and counts how many fresh sets of each compound were actually used before the race (via FastF1's `FreshTyre` flag), then applies the current FIA allocation (13 sets — 2 Hard / 3 Medium / 8 Soft on a normal weekend, 12 sets on a Sprint weekend) to cap what's realistically left for the race
+6. Optionally factors in **real safety car / VSC windows** from that session — a pit stop landing under a neutralized track costs far less real time than a green-flag stop, and the model prices that in rather than assuming every stop costs the same
+
+Every conclusion is written in plain English with the actual numbers, and only presented as a "faster alternative" when the model found something genuinely quicker — not just the least-bad option in a limited search.
+
+**Caveats, stated plainly in the app itself:** this assumes linear degradation from the session's own data, and can't account for traffic, tyre-cliff effects, or race-day risk (punctures, damage, etc.). It's a data-driven estimate, not a guarantee.
+
+## Presentation
+
+- Full-screen intro video on load, auto-advancing once it finishes (no click needed)
+- A looping video plays during data loading instead of a plain spinner
+- Dark, F1-themed styling (Titillium Web font, team colors pulled directly from FastF1 rather than official logos/branding, to avoid trademarked assets)
+- Personal background photo (Spa-Francorchamps), embedded directly in the app
 
 ## Tech stack
 
 | Layer | Tool |
 |---|---|
 | Data source | [FastF1](https://github.com/theOehrly/Fast-F1) (official F1 timing API wrapper) |
-| Data processing | Python, pandas |
-| Visualization | matplotlib |
-| Structured storage | SQL (schema included, see `f1_schema.sql`) |
-| Dashboard layer | Power BI (via exported CSVs) |
+| App framework | [Streamlit](https://streamlit.io) |
+| Data processing | Python, pandas, NumPy |
+| Interactive charts | Plotly |
+| Static charts | Matplotlib |
 
 ## Project structure
 
 ```
 f1-race-strategy-analyzer/
-├── f1_tyre_degradation_analysis.py   # main analysis script
-├── f1_schema.sql                      # relational schema + example queries
-├── tyre_degradation.png               # sample output plot
-└── README.md
+├── app.py                  # the full Streamlit app
+├── requirements.txt
+├── static/
+│   ├── intro.mp4            # full-screen intro video
+│   └── loading.mp4          # loading-state video
+└── .streamlit/
+    └── config.toml          # dark theme + static file serving
 ```
 
-## How to run it
+> Note: the background photo is embedded directly as base64 inside `app.py`, so it needs no separate file or static-serving configuration — one less thing that can be misconfigured on deployment.
+
+## Running it locally
 
 **Requirements:** Python 3.9+
 
 ```bash
-pip install fastf1 pandas matplotlib
-python f1_tyre_degradation_analysis.py
+pip install -r requirements.txt
+streamlit run app.py
 ```
 
-On first run, it downloads and caches session data (takes 1–2 minutes, needs internet access). Subsequent runs on the same race are near-instant.
+Place `intro.mp4` and `loading.mp4` inside a `static/` folder next to `app.py`, and make sure `.streamlit/config.toml` includes:
 
-To analyze a different Grand Prix, edit the config block at the top of `f1_tyre_degradation_analysis.py`:
-
-```python
-YEAR = 2024
-GRAND_PRIX = "Singapore"      # any GP name FastF1 supports
-SESSION = "R"                  # R = Race, Q = Qualifying, FP1/FP2/FP3
-DRIVERS = ["VER", "HAM", "LEC"]  # driver codes to compare
+```toml
+[server]
+enableStaticServing = true
 ```
 
-## Output files
+On first loading a race, FastF1 downloads and caches session data (takes 1–2 minutes, needs internet access). Subsequent loads of the same race are near-instant thanks to local caching.
 
-Running the script generates race-specific output files, so re-running for a different race never overwrites a previous one:
-- `tyre_degradation_summary_<race>_<year>.csv` — degradation slope per driver/compound/stint
-- `clean_laps_export_<race>_<year>.csv` — cleaned lap-by-lap data, ready for Power BI or SQL import
-- `tyre_degradation_<race>_<year>.png` — tyre degradation comparison plot
-- `strategy_timeline_<race>_<year>.png` — pit stop / compound strategy timeline
-- `average_pace_<race>_<year>.png` — average lap time bar chart
+## Deploying (free, public link)
 
-e.g. running the Singapore 2024 race produces `tyre_degradation_singapore_2024.png`, `strategy_timeline_singapore_2024.png`, and `average_pace_singapore_2024.png`.
-
-## SQL layer
-
-`f1_schema.sql` defines a relational schema (`sessions`, `drivers`, `laps`, `stint_degradation`) for loading the exported CSVs into a proper database, along with example analytical queries — e.g. finding which compound degrades fastest, or comparing two drivers' pace drop-off on the same tyre.
+1. Push this repo to GitHub, including `static/` and `.streamlit/config.toml`
+2. Go to [share.streamlit.io](https://share.streamlit.io), sign in with GitHub
+3. Click **New app** → select this repo → set the main file to `app.py` → **Deploy**
+4. You'll get a public URL like `https://your-app-name.streamlit.app`
 
 ## Roadmap
 
-- [ ] Pit stop strategy simulator (1-stop vs. 2-stop, using track-specific pit loss time)
 - [ ] Sector-by-sector telemetry overlay for qualifying lap comparisons
-- [ ] Power BI dashboard (season-level pace comparison)
+- [ ] Season-level pace comparison across multiple races
+- [ ] Export the Strategy Verdict conclusions as a shareable summary/report
 
 ## Author
 

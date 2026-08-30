@@ -1,6 +1,7 @@
 streamlit
 fastf1
 pandas
+numpy
 matplotlib
 requests
 plotly
