@@ -200,7 +200,7 @@ if not st.session_state.intro_done:
 # want to ship, zip it (the zip should contain the f1_cache folder itself,
 # not just its contents), upload the zip as an asset on a GitHub Release for
 # this repo, and paste that asset's download URL below.
-CACHE_BUNDLE_URL = ""  # e.g. "https://github.com/USERNAME/REPO/releases/download/TAG/f1_cache.zip"
+CACHE_BUNDLE_URL = "https://github.com/Dazaicodes02/f1-race-strategy-analyzer/releases/tag/v1"  # e.g. "https://github.com/USERNAME/REPO/releases/download/TAG/f1_cache.zip"
 
 
 def bootstrap_prefetched_cache():
