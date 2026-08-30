@@ -200,24 +200,30 @@ if not st.session_state.intro_done:
 # want to ship, zip it (the zip should contain the f1_cache folder itself,
 # not just its contents), upload the zip as an asset on a GitHub Release for
 # this repo, and paste that asset's download URL below.
-CACHE_BUNDLE_URL = "https://github.com/Dazaicodes02/f1-race-strategy-analyzer/releases/tag/v1"  # e.g. "https://github.com/USERNAME/REPO/releases/download/TAG/f1_cache.zip"
+CACHE_BUNDLE_URL = "https://github.com/Dazaicodes02/f1-race-strategy-analyzer/releases/download/v1/f1_cache.zip"
 
 
 def bootstrap_prefetched_cache():
     if os.path.isdir("f1_cache") and os.listdir("f1_cache"):
-        return  # already have a cache — nothing to do
+        print("Cache bootstrap: f1_cache already has content — skipping download.")
+        return
     if not CACHE_BUNDLE_URL:
-        return  # no bundle configured — app will just try live fetching as normal
+        print("Cache bootstrap: CACHE_BUNDLE_URL is empty — skipping, will try live fetching.")
+        return
+    print(f"Cache bootstrap: downloading {CACHE_BUNDLE_URL} ...")
     try:
-        resp = requests.get(CACHE_BUNDLE_URL, timeout=60)
+        resp = requests.get(CACHE_BUNDLE_URL, timeout=120)
         resp.raise_for_status()
+        print(f"Cache bootstrap: downloaded {len(resp.content) / (1024*1024):.1f} MB, extracting...")
         with zipfile.ZipFile(io.BytesIO(resp.content)) as zf:
             zf.extractall(".")
+        extracted_ok = os.path.isdir("f1_cache") and os.listdir("f1_cache")
+        print(f"Cache bootstrap: extraction {'succeeded' if extracted_ok else 'FAILED — f1_cache still empty!'}")
     except Exception as e:
         # Don't crash the whole app over a failed bootstrap — just fall back
         # to live fetching (which may itself fail on a blocked host, but
         # that's a separate, already-understood problem).
-        print(f"Cache bootstrap failed, continuing without it: {e}")
+        print(f"Cache bootstrap FAILED, continuing without it: {e}")
 
 
 bootstrap_prefetched_cache()
